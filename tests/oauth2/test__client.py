@@ -76,8 +76,7 @@ def test__token_endpoint_request():
         method='POST',
         url='http://example.com',
         headers={'content-type': 'application/x-www-form-urlencoded'},
-        body='test=params',
-        timeout=10)
+        body='test=params')
 
     # Check result
     assert result == {'test': 'response'}

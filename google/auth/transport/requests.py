@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 
+import functools
 import logging
 
 try:
@@ -31,6 +32,9 @@ from google.auth import exceptions
 from google.auth import transport
 
 _LOGGER = logging.getLogger(__name__)
+
+
+TOKEN_REFRESH_TIMEOUT = 60
 
 
 class _Response(transport.Response):
@@ -164,6 +168,11 @@ class AuthorizedSession(requests.Session):
         # HTTP requests as well as the retriable credential refresh.
         retry_adapter = requests.adapters.HTTPAdapter(max_retries=3)
         auth_request_session.mount("https://", retry_adapter)
+
+        # The requests library does not time out when no timeout value
+        # specified.
+        auth_request_session.request = functools.partial(
+            auth_request_session.request, timeout=TOKEN_REFRESH_TIMEOUT)
 
         # Request instance used by internal methods (for example,
         # credentials.refresh).
